@@ -1,0 +1,22 @@
+{
+    "name": "chulakov/yii2-queue-mailer",
+    "description": "Mailer with send message in to queue.",
+    "license": "Commercial",
+    "type": "yii2-components",
+    "require": {
+        "php": "5.6.*",
+        "yiisoft/yii2": "~2.0.6",
+        "yiisoft/yii2-queue": "^2.0"
+    },
+    "authors": [
+        {
+            "name": "Chulakov Studio",
+            "email": "hello@chulakov.ru"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "chulakov\\queuemailer\\": "src/"
+        }
+    }
+}
