@@ -11,9 +11,9 @@ namespace chulakov\queuemailer\jobs;
 use chulakov\queuemailer\Mailer;
 use yii\base\BaseObject;
 use yii\base\InvalidConfigException;
-use yii\queue\Job;
+use yii\queue\JobInterface;
 
-class MessageJob extends BaseObject implements Job
+class MessageJob extends BaseObject implements JobInterface
 {
     /**
      * @var integer Идентификатор отложенного сообщения
