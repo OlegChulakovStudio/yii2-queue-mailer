@@ -34,7 +34,7 @@ class MessageJob extends BaseObject implements JobInterface
         if (!$mailer = \Yii::$app->get($this->componentName)) {
             throw new InvalidConfigException("Не существует компонента с именем componentName: {$this->componentName}.");
         }
-        if ($sender = \Yii::$app->get($mailer->mailerComponent)) {
+        if (!$sender = \Yii::$app->get($mailer->mailerComponent)) {
             throw new InvalidConfigException("Не существует компонента с именем mailerComponent: {$mailer->mailerComponent}.");
         }
         if (!$message = $mailer->findMessage($this->messageId)) {

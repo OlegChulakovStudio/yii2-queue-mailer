@@ -41,7 +41,6 @@ class Mailer extends BaseMailer
      *
      * @param MessageInterface|Message $message
      * @return bool
-     * @throws \yii\base\InvalidConfigException
      */
     protected function sendMessage($message)
     {

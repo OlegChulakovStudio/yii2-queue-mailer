@@ -269,6 +269,16 @@ class Message extends BaseObject implements MessageInterface
     }
 
     /**
+     * Получение текстовой версии письма
+     *
+     * @return string
+     */
+    public function getTextBody()
+    {
+        return $this->mail->text;
+    }
+
+    /**
      * Устанавливает HTML версию пиьма
      *
      * @param string $html
@@ -278,6 +288,16 @@ class Message extends BaseObject implements MessageInterface
     {
         $this->mail->html = $html;
         return $this;
+    }
+
+    /**
+     * Получение HTML версии письма
+     *
+     * @return string
+     */
+    public function getHtmlBody()
+    {
+        return $this->mail->html;
     }
 
     /**
