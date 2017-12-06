@@ -701,7 +701,7 @@ class Message extends BaseObject implements MessageInterface
         $attache->prefix = $prefix;
         $attache->message = $this->messageId;
         if (!empty($options['fileName'])) {
-            $attache->name;
+            $attache->name = $options['fileName'];
         }
         return $attache;
     }
