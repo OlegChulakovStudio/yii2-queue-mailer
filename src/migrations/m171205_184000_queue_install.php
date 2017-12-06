@@ -1,6 +1,6 @@
 <?php
 /**
- * Файл класса queue_migrate_install
+ * Файл класса m171205_184000_queue_install
  *
  * @copyright Copyright (c) 2017, Oleg Chulakov Studio
  * @link http://chulakov.com/
@@ -10,7 +10,7 @@ namespace chulakov\queuemailer\migrations;
 
 use yii\db\Migration;
 
-class queue_migrate_install extends Migration
+class m171205_184000_queue_install extends Migration
 {
     public function up()
     {
