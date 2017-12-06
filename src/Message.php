@@ -715,7 +715,7 @@ class Message extends BaseObject implements MessageInterface
     protected function attacheFile(Attachment $file)
     {
         /** @var AttacheStorage $attache */
-        if ($attache = \Yii::$app->get($this->attacheComponent)) {
+        if ($attache = \Yii::$app->get($this->attacheComponent, false)) {
             return $attache->save($file);
         }
         // Если не настроен компонент обработки файлов, просто прикрепляем файлы на диске.

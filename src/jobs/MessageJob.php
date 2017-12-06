@@ -31,13 +31,13 @@ class MessageJob extends BaseObject implements JobInterface
     public function execute($queue)
     {
         /** @var Mailer $mailer */
-        if (!$mailer = \Yii::$app->get($this->componentName)) {
+        if (!$mailer = \Yii::$app->get($this->componentName, false)) {
             throw new InvalidConfigException("Не существует компонента с именем componentName: {$this->componentName}.");
         }
-        if (!$sender = \Yii::$app->get($mailer->mailerComponent)) {
+        if (!$sender = \Yii::$app->get($mailer->mailerComponent, false)) {
             throw new InvalidConfigException("Не существует компонента с именем mailerComponent: {$mailer->mailerComponent}.");
         }
-        if (!$message = $mailer->findMessage($this->messageId)) {
+        if (!$message = $mailer->findMessage($this->messageId, false)) {
             throw new InvalidConfigException("Не найдено сообщение с ID {$this->messageId}.");
         }
         // Отправка сообщения через сложенный компонент

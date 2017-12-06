@@ -47,7 +47,7 @@ class Mailer extends BaseMailer
         // Попытка поставить в очередь
         if (!$this->saveMessage($message)) {
             // Попытка отправить почту напрямую
-            if ($mailer = \Yii::$app->get($this->mailerComponent)) {
+            if ($mailer = \Yii::$app->get($this->mailerComponent, false)) {
                 return $mailer->send($message->getSwiftMessage());
             }
         }
@@ -63,7 +63,7 @@ class Mailer extends BaseMailer
     protected function saveMessage($message)
     {
         // Попытка поставить в очередь
-        if ($queue = \Yii::$app->get($this->queueComponent)) {
+        if ($queue = \Yii::$app->get($this->queueComponent, false)) {
             return $queue->push(new MessageJob([
                 'messageId' => $message->id,
                 'componentName' => $this->componentName,
