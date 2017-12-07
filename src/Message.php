@@ -8,6 +8,7 @@
 
 namespace chulakov\queuemailer;
 
+use chulakov\queuemailer\models\MailStorageInterface;
 use yii\base\BaseObject;
 use yii\base\InvalidConfigException;
 use yii\base\InvalidParamException;
@@ -18,12 +19,6 @@ use chulakov\queuemailer\models\Attachment;
 
 class Message extends BaseObject implements MessageInterface
 {
-    /**
-     * Идентификатор существующей модели письма
-     *
-     * @var integer
-     */
-    public $id;
     /**
      * Компонент работы с прикрепляемыми файлами к письму
      *
@@ -76,17 +71,34 @@ class Message extends BaseObject implements MessageInterface
     protected $messageId;
 
     /**
-     * Развертывание данных из модели
+     * Конструктор с зависимостью от объекта ранения
+     *
+     * @param MailStorageInterface $mail
+     * @param array $config
+     */
+    public function __construct(MailStorageInterface $mail, array $config = [])
+    {
+        $this->setup($mail);
+        parent::__construct($config);
+    }
+
+    /**
+     * Инициализация сообщения
      */
     public function init()
     {
         $this->messageId = hash("crc32b", md5(uniqid() . microtime(true)));
-        if (!is_null($this->id)) {
-            $this->mail = QueueMail::findOne($this->id);
-        }
-        if (empty($this->mail)) {
-            $this->mail = new QueueMail();
-        }
+        parent::init();
+    }
+
+    /**
+     * Развертывание данных из модели
+     *
+     * @param MailStorageInterface $mail
+     */
+    protected function setup(MailStorageInterface $mail)
+    {
+        $this->mail = $mail;
         $arrays = ['attachments', 'embeds', 'signs', 'headers'];
         foreach ($arrays as $key) {
             if (!empty($this->mail->{$key})) {
