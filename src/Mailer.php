@@ -9,6 +9,7 @@
 namespace chulakov\queuemailer;
 
 use chulakov\queuemailer\jobs\MessageJob;
+use chulakov\queuemailer\models\MailStorageInterface;
 use yii\mail\BaseMailer;
 use yii\mail\MessageInterface;
 
@@ -18,6 +19,10 @@ class Mailer extends BaseMailer
      * @var string Класс объекта сообщения
      */
     public $messageClass = 'chulakov\queuemailer\Message';
+    /**
+     * @var string Класс модели хранения данных из письма
+     */
+    public $storageClass = 'chulakov\queuemailer\models\QueueMail';
     /**
      * @var string Имя компонента для обработки прикрепляемых файлов
      */
@@ -41,6 +46,7 @@ class Mailer extends BaseMailer
      *
      * @param MessageInterface|Message $message
      * @return bool
+     * @throws \yii\base\InvalidConfigException
      */
     protected function sendMessage($message)
     {
@@ -80,7 +86,7 @@ class Mailer extends BaseMailer
      */
     public function createMessage()
     {
-        return $this->buildMessage($this->messageConfig);
+        return $this->buildMessage(new $this->storageClass, $this->messageConfig);
     }
 
     /**
@@ -92,25 +98,29 @@ class Mailer extends BaseMailer
      */
     public function findMessage($id)
     {
-        return $this->buildMessage(array_merge(
-            $this->messageConfig, ['id' => $id]
-        ));
+        /** @var MailStorageInterface $class */
+        $class = $this->storageClass;
+        if (!$mail = $class::findById($id)) {
+            $mail = new $class();
+        }
+        return $this->buildMessage($mail, $this->messageConfig);
     }
 
     /**
      * Построитель объкта сообщения
      *
+     * @param MailStorageInterface $mail
      * @param array $config
      * @return Message|object
      * @throws \yii\base\InvalidConfigException
      */
-    protected function buildMessage($config)
+    protected function buildMessage($mail, $config)
     {
         if (!array_key_exists('class', $config)) {
             $config['class'] = $this->messageClass;
         }
         $config['mailer'] = $this;
         $config['attacheComponent'] = $this->attacheComponent;
-        return \Yii::createObject($config);
+        return \Yii::createObject($config, [$mail]);
     }
 }
