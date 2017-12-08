@@ -27,6 +27,7 @@ class MessageJob extends BaseObject implements JobInterface
     /**
      * @param \yii\queue\Queue $queue
      * @throws \yii\base\InvalidConfigException
+     * @throws \chulakov\queuemailer\exceptions\NotFoundModelException
      */
     public function execute($queue)
     {

@@ -10,6 +10,7 @@ namespace chulakov\queuemailer;
 
 use chulakov\queuemailer\jobs\MessageJob;
 use chulakov\queuemailer\models\MailStorageInterface;
+use chulakov\queuemailer\exceptions\NotFoundModelException;
 use yii\mail\BaseMailer;
 use yii\mail\MessageInterface;
 
@@ -93,17 +94,22 @@ class Mailer extends BaseMailer
      * Поиск сообщения по его ID в очереди
      *
      * @param integer $id
+     * @param bool $throwException
      * @return Message|object
+     * @throws NotFoundModelException
      * @throws \yii\base\InvalidConfigException
      */
-    public function findMessage($id)
+    public function findMessage($id, $throwException = true)
     {
         /** @var MailStorageInterface $class */
         $class = $this->storageClass;
-        if (!$mail = $class::findById($id)) {
-            $mail = new $class();
+        if ($mail = $class::findById($id)) {
+            return $this->buildMessage($mail, $this->messageConfig);
         }
-        return $this->buildMessage($mail, $this->messageConfig);
+        if ($throwException) {
+            throw new NotFoundModelException('Не найдено сообщение с данным идентификатором.');
+        }
+        return null;
     }
 
     /**
