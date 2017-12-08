@@ -11,6 +11,7 @@ namespace chulakov\queuemailer\tests;
 use chulakov\queuemailer\Mailer;
 use chulakov\queuemailer\Message;
 use chulakov\queuemailer\tests\models\QueueTestMail;
+use chulakov\queuemailer\exceptions\NotFoundModelException;
 
 class MailerTest extends \PHPUnit\Framework\TestCase
 {
@@ -28,6 +29,23 @@ class MailerTest extends \PHPUnit\Framework\TestCase
             'storageClass' => QueueTestMail::class,
         ]);
         $this->assertInstanceOf(Message::class, $mailer->findMessage(1));
+    }
+
+    public function testNotFoundMessage()
+    {
+        $mailer = new Mailer([
+            'storageClass' => QueueTestMail::class,
+        ]);
+        $this->assertEquals(null, $mailer->findMessage(0, false));
+    }
+
+    public function testNotFoundMessageException()
+    {
+        $mailer = new Mailer([
+            'storageClass' => QueueTestMail::class,
+        ]);
+        $this->expectException(NotFoundModelException::class);
+        $massage = $mailer->findMessage(0);
     }
 
     public function testSettingMessage()

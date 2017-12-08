@@ -35,6 +35,9 @@ class QueueTestMail extends BaseObject implements MailStorageInterface
 
     public static function findById($id)
     {
+        if (empty($id)) {
+            return null;
+        }
         return new static([
             'id' => $id,
         ]);
