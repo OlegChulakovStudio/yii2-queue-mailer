@@ -72,7 +72,7 @@ class Mailer extends BaseMailer
         // Попытка поставить в очередь
         if ($queue = \Yii::$app->get($this->queueComponent, false)) {
             return $queue->push(new MessageJob([
-                'messageId' => $message->id,
+                'messageId' => $message->getMessageId(),
                 'componentName' => $this->componentName,
             ]));
         }

@@ -580,6 +580,16 @@ class Message extends BaseObject implements MessageInterface
     }
 
     /**
+     * Метод получени идентификатора письма
+     *
+     * @return string
+     */
+    public function getMessageId()
+    {
+        return $this->mail->id;
+    }
+
+    /**
      * Возвращает строковое представление письма
      *
      * @return string
@@ -787,7 +797,6 @@ class Message extends BaseObject implements MessageInterface
         $mail->signs = $this->serialize($this->signs);
 
         if ($mail->save()) {
-            $this->id = $mail->id;
             return true;
         }
 
