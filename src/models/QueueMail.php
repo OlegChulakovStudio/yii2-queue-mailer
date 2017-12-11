@@ -37,7 +37,7 @@ use yii\db\BaseActiveRecord;
  * @property string $created_at
  * @property string $created_by
  */
-class QueueMail extends ActiveRecord
+class QueueMail extends ActiveRecord implements MailStorageInterface
 {
     /**
      * @inheritdoc
@@ -45,6 +45,17 @@ class QueueMail extends ActiveRecord
     public static function tableName()
     {
         return '{{%queue_mail}}';
+    }
+
+    /**
+     * Поиск модели по ее ID
+     *
+     * @param integer $id
+     * @return static|null
+     */
+    public static function findById($id)
+    {
+        return static::findOne($id);
     }
 
     /**
