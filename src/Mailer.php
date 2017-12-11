@@ -57,11 +57,12 @@ class Mailer extends BaseMailer
     protected function sendMessage($message)
     {
         // Попытка поставить в очередь
-        if (!$this->saveMessage($message)) {
-            // Попытка отправить почту напрямую
-            if ($mailer = \Yii::$app->get($this->mailerComponent, false)) {
-                return $mailer->send($message->getSwiftMessage());
-            }
+        if ($this->saveMessage($message)) {
+            return true;
+        }
+        // Попытка отправить почту напрямую
+        if ($mailer = \Yii::$app->get($this->mailerComponent, false)) {
+            return $mailer->send($message->getSwiftMessage());
         }
         return false;
     }
