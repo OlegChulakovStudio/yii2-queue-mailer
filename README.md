@@ -11,16 +11,12 @@ Yii2 Queue Mailer
 
 Для подключения компонентов в свой код необходимо добавить в _composer.json_ следующий код:
 ```
-"require": {
-    "chulakov/yii2-queue-mailer": "dev-master"
-},
-...
-"repositories": [
-    {
-        "type": "vcs",
-        "url":  "git@bitbucket.org:OlegChulakovStudio/yii2-queue-mailer.git"
-    }
-]
+"oleg-chulakov-studio/yii2-queue-mailer": "dev-master"
+```
+
+Или набрать команду:
+```
+coposer require oleg-chulakov-studio/yii2-queue-mailer
 ```
 
 Выполнение миграций:
