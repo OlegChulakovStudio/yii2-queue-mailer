@@ -87,8 +87,7 @@ class Message extends BaseObject implements MessageInterface
      */
     public function __construct(MailStorageInterface $mail, array $config = [])
     {
-        $this->setup($mail);
-        parent::__construct($config);
+        parent::__construct($this->bootstrap($mail, $config));
     }
 
     /**
@@ -101,12 +100,21 @@ class Message extends BaseObject implements MessageInterface
     }
 
     /**
-     * Развертывание данных из модели
+     * Загрузка важных для запуска полей и распаковка упакованных данных в модель
      *
      * @param MailStorageInterface $mail
+     * @param array $config
+     * @return array
      */
-    protected function setup(MailStorageInterface $mail)
+    protected function bootstrap(MailStorageInterface $mail, $config = [])
     {
+        $startup = ['attacheComponent', 'serializer'];
+        foreach ($startup as $item) {
+            if (isset($config[$item])) {
+                $this->{$item} = $config[$item];
+                unset($config[$item]);
+            }
+        }
         $this->mail = $mail;
         $arrays = ['attachments', 'embeds', 'signs', 'headers'];
         foreach ($arrays as $key) {
@@ -116,6 +124,7 @@ class Message extends BaseObject implements MessageInterface
                 }
             }
         }
+        return $config;
     }
 
     /**
