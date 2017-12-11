@@ -23,6 +23,11 @@ Yii2 Queue Mailer
 ]
 ```
 
+Выполнение миграций:
+```
+php yii migrate/up --migrationNamespaces='chulakov\queuemailer\migrations'
+```
+
 Настройка
 ---------
 
@@ -41,7 +46,7 @@ Yii2 Queue Mailer
 отправить письмо автоматически через него, если не будет настроен компонент очереди или процедура постановки
 в очередь прервется и не будет выполнена. Данное поведение можно отключить через конфигурацию.
 
-**attache**
+**attachment**
 
 Третий желаемый компонент находится в этом пакете и является хранилищем и обработчиком
 прикрепляемых (внедряемых) файлов к письму. Поскольку мейлер имеет возможность прикрепить файлы
@@ -51,7 +56,7 @@ Yii2 Queue Mailer
 текущие версии файлов для отправки.
 
 ```
-'attache' => [
+'attachment' => [
     'class' => 'chulakov\queuemailer\AttacheStorage',
     'storageAll' => false,
     'storagePath' => '@runtime/attachments',
@@ -70,11 +75,11 @@ Yii2 Queue Mailer
 'queuemailer' => [
     'class' => 'chulakov\queuemailer\Mailer',
     'messageClass' => 'chulakov\queuemailer\Message',
+    'storageClass' => 'chulakov\queuemailer\models\QueueMail',
+    'jobClass' => 'chulakov\queuemailer\jobs\MessageJob',
     // Базовый мейлер
     'viewPath' => '@common/mail',
     'useFileTransport' => false,
-    'fileTransportPath' => '@runtime/mail',
-    'fileTransportCallback' => function($mailer, $message) {},
     // Настройка компонентов
     'attacheComponent' => 'attachment',
     'mailerComponent' => 'mailer',
@@ -82,6 +87,14 @@ Yii2 Queue Mailer
     'queueComponent' => 'queue',
 ],
 ```
+
+- **messageClass** - Класс сообщения, используемый для компоновки сообщения перед отправкой.
+- **storageClass** - Класс модели, в которой будет храниться вся информация о сформированном сообщении.
+Должен реализовать интерфейс `MailStorageInterface`, реализуя метод `findById`, который должен вернуть
+модель с сохраненными данными по ее ID.
+- **jobClass** - Класс задания, которое будет обрабатывать отправку сообщения из очереди.
+Должно реализовать интерфейс `MessageJobInterface`, реализуя метод `create` для создания задания.
+Класс можно поменять на лету, перед каждой отправкой сообщения, через функцию `setJobClass`.
 - **attacheComponent** - Компонент обработки прикрепляемых файлов.
 Если не будет настроен, то будет возможность прикреплять только существующие файлы на диске.
 - **mailerComponent** - Имя компонента для отправки почты. Должен ссылаться на `Yii2-swiftmailer`.
