@@ -10,6 +10,7 @@ namespace chulakov\queuemailer\tests;
 
 use chulakov\queuemailer\Mailer;
 use chulakov\queuemailer\Message;
+use chulakov\queuemailer\serializers\JsonSerializer;
 use chulakov\queuemailer\tests\models\QueueTestMail;
 use chulakov\queuemailer\exceptions\NotFoundModelException;
 
@@ -56,6 +57,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         $mailer = new Mailer([
             'storageClass' => QueueTestMail::class,
             'messageConfig' => [
+                'serializer' => JsonSerializer::class,
                 'from' => $from,
                 'replyTo' => $replyTo,
                 'subject' => $subject,
