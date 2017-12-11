@@ -8,6 +8,7 @@
 
 namespace chulakov\queuemailer;
 
+use yii\di\Instance;
 use yii\base\BaseObject;
 use yii\base\InvalidConfigException;
 use yii\base\InvalidParamException;
@@ -16,6 +17,8 @@ use yii\mail\MessageInterface;
 use chulakov\queuemailer\models\QueueMail;
 use chulakov\queuemailer\models\Attachment;
 use chulakov\queuemailer\models\MailStorageInterface;
+use chulakov\queuemailer\serializers\PhpSerializer;
+use chulakov\queuemailer\serializers\SerializerInterface;
 
 class Message extends BaseObject implements MessageInterface
 {
@@ -31,6 +34,12 @@ class Message extends BaseObject implements MessageInterface
      * @var MailerInterface
      */
     public $mailer;
+    /**
+     * Класс сериализации данных
+     *
+     * @var SerializerInterface
+     */
+    public $serializer = PhpSerializer::class;
 
     /**
      * Модель с данными о письме
@@ -693,7 +702,7 @@ class Message extends BaseObject implements MessageInterface
         if (empty($data)) {
             $data = [];
         }
-        return serialize($data);
+        return $this->getSerializer()->serialize($data);
     }
 
     /**
@@ -707,7 +716,21 @@ class Message extends BaseObject implements MessageInterface
         if (empty($data)) {
             return [];
         }
-        return unserialize($data);
+        return $this->getSerializer()->unserialize($data);
+    }
+
+    /**
+     * Отложенная инициализация сериализатора
+     *
+     * @return SerializerInterface
+     * @throws InvalidConfigException
+     */
+    protected function getSerializer()
+    {
+        if (!($this->serializer instanceof SerializerInterface)) {
+            $this->serializer = Instance::ensure($this->serializer, SerializerInterface::class);
+        }
+        return $this->serializer;
     }
 
     /**

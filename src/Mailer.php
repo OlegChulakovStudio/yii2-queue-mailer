@@ -8,7 +8,6 @@
 
 namespace chulakov\queuemailer;
 
-use chulakov\queuemailer\jobs\MessageJob;
 use chulakov\queuemailer\jobs\MessageJobInterface;
 use chulakov\queuemailer\models\MailStorageInterface;
 use chulakov\queuemailer\exceptions\NotFoundModelException;
