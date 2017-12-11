@@ -16,7 +16,7 @@ Yii2 Queue Mailer
 
 Или набрать команду:
 ```
-coposer require oleg-chulakov-studio/yii2-queue-mailer
+composer require oleg-chulakov-studio/yii2-queue-mailer
 ```
 
 Выполнение миграций:
