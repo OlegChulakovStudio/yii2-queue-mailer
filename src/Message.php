@@ -15,15 +15,10 @@ use yii\mail\MailerInterface;
 use yii\mail\MessageInterface;
 use chulakov\queuemailer\models\QueueMail;
 use chulakov\queuemailer\models\Attachment;
+use chulakov\queuemailer\models\MailStorageInterface;
 
 class Message extends BaseObject implements MessageInterface
 {
-    /**
-     * Идентификатор существующей модели письма
-     *
-     * @var integer
-     */
-    public $id;
     /**
      * Компонент работы с прикрепляемыми файлами к письму
      *
@@ -76,17 +71,34 @@ class Message extends BaseObject implements MessageInterface
     protected $messageId;
 
     /**
-     * Развертывание данных из модели
+     * Конструктор с зависимостью от объекта ранения
+     *
+     * @param MailStorageInterface $mail
+     * @param array $config
+     */
+    public function __construct(MailStorageInterface $mail, array $config = [])
+    {
+        $this->setup($mail);
+        parent::__construct($config);
+    }
+
+    /**
+     * Инициализация сообщения
      */
     public function init()
     {
         $this->messageId = hash("crc32b", md5(uniqid() . microtime(true)));
-        if (!is_null($this->id)) {
-            $this->mail = QueueMail::findOne($this->id);
-        }
-        if (empty($this->mail)) {
-            $this->mail = new QueueMail();
-        }
+        parent::init();
+    }
+
+    /**
+     * Развертывание данных из модели
+     *
+     * @param MailStorageInterface $mail
+     */
+    protected function setup(MailStorageInterface $mail)
+    {
+        $this->mail = $mail;
         $arrays = ['attachments', 'embeds', 'signs', 'headers'];
         foreach ($arrays as $key) {
             if (!empty($this->mail->{$key})) {
@@ -269,6 +281,16 @@ class Message extends BaseObject implements MessageInterface
     }
 
     /**
+     * Получение текстовой версии письма
+     *
+     * @return string
+     */
+    public function getTextBody()
+    {
+        return $this->mail->text;
+    }
+
+    /**
      * Устанавливает HTML версию пиьма
      *
      * @param string $html
@@ -278,6 +300,16 @@ class Message extends BaseObject implements MessageInterface
     {
         $this->mail->html = $html;
         return $this;
+    }
+
+    /**
+     * Получение HTML версии письма
+     *
+     * @return string
+     */
+    public function getHtmlBody()
+    {
+        return $this->mail->html;
     }
 
     /**
@@ -548,6 +580,16 @@ class Message extends BaseObject implements MessageInterface
     }
 
     /**
+     * Метод получени идентификатора письма
+     *
+     * @return string
+     */
+    public function getMessageId()
+    {
+        return $this->mail->id;
+    }
+
+    /**
      * Возвращает строковое представление письма
      *
      * @return string
@@ -681,7 +723,7 @@ class Message extends BaseObject implements MessageInterface
         $attache->prefix = $prefix;
         $attache->message = $this->messageId;
         if (!empty($options['fileName'])) {
-            $attache->name;
+            $attache->name = $options['fileName'];
         }
         return $attache;
     }
@@ -695,7 +737,7 @@ class Message extends BaseObject implements MessageInterface
     protected function attacheFile(Attachment $file)
     {
         /** @var AttacheStorage $attache */
-        if ($attache = \Yii::$app->get($this->attacheComponent)) {
+        if ($attache = \Yii::$app->get($this->attacheComponent, false)) {
             return $attache->save($file);
         }
         // Если не настроен компонент обработки файлов, просто прикрепляем файлы на диске.
@@ -755,7 +797,6 @@ class Message extends BaseObject implements MessageInterface
         $mail->signs = $this->serialize($this->signs);
 
         if ($mail->save()) {
-            $this->id = $mail->id;
             return true;
         }
 
