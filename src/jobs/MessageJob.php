@@ -9,11 +9,12 @@
 namespace chulakov\queuemailer\jobs;
 
 use chulakov\queuemailer\Mailer;
+use chulakov\queuemailer\Message;
 use yii\base\BaseObject;
 use yii\base\InvalidConfigException;
 use yii\queue\JobInterface;
 
-class MessageJob extends BaseObject implements JobInterface
+class MessageJob extends BaseObject implements JobInterface, MessageJobInterface
 {
     /**
      * @var integer Идентификатор отложенного сообщения
@@ -23,6 +24,19 @@ class MessageJob extends BaseObject implements JobInterface
      * @var string Идентификатор компонента отложенной рассылки почты
      */
     public $componentName;
+
+    /**
+     * @param Message $message
+     * @param Mailer $mailer
+     * @return MessageJobInterface
+     */
+    public static function create($message, $mailer)
+    {
+        return new static([
+            'messageId' => $message->getMessageId(),
+            'componentName' => $mailer->componentName,
+        ]);
+    }
 
     /**
      * @param \yii\queue\Queue $queue

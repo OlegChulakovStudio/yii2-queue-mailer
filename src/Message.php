@@ -8,7 +8,6 @@
 
 namespace chulakov\queuemailer;
 
-use chulakov\queuemailer\models\MailStorageInterface;
 use yii\base\BaseObject;
 use yii\base\InvalidConfigException;
 use yii\base\InvalidParamException;
@@ -16,6 +15,7 @@ use yii\mail\MailerInterface;
 use yii\mail\MessageInterface;
 use chulakov\queuemailer\models\QueueMail;
 use chulakov\queuemailer\models\Attachment;
+use chulakov\queuemailer\models\MailStorageInterface;
 
 class Message extends BaseObject implements MessageInterface
 {

@@ -9,6 +9,7 @@
 namespace chulakov\queuemailer;
 
 use chulakov\queuemailer\jobs\MessageJob;
+use chulakov\queuemailer\jobs\MessageJobInterface;
 use chulakov\queuemailer\models\MailStorageInterface;
 use chulakov\queuemailer\exceptions\NotFoundModelException;
 use yii\mail\BaseMailer;
@@ -24,6 +25,10 @@ class Mailer extends BaseMailer
      * @var string Класс модели хранения данных из письма
      */
     public $storageClass = 'chulakov\queuemailer\models\QueueMail';
+    /**
+     * @var string Класс задания, попадающий в очередь
+     */
+    public $jobClass = 'chulakov\queuemailer\jobs\MessageJob';
     /**
      * @var string Имя компонента для обработки прикрепляемых файлов
      */
@@ -71,10 +76,9 @@ class Mailer extends BaseMailer
     {
         // Попытка поставить в очередь
         if ($queue = \Yii::$app->get($this->queueComponent, false)) {
-            return $queue->push(new MessageJob([
-                'messageId' => $message->getMessageId(),
-                'componentName' => $this->componentName,
-            ]));
+            /** @var MessageJobInterface $job */
+            $job = $this->jobClass;
+            return $queue->push($job::create($message, $this));
         }
         return false;
     }
@@ -88,6 +92,20 @@ class Mailer extends BaseMailer
     public function createMessage()
     {
         return $this->buildMessage(new $this->storageClass, $this->messageConfig);
+    }
+
+    /**
+     * Установка класса для задания
+     *
+     * @param string $class
+     * @return Mailer
+     */
+    public function setJobClass($class)
+    {
+        if (class_exists($class)) {
+            $this->jobClass = $class;
+        }
+        return $this;
     }
 
     /**
