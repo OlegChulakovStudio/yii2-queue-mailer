@@ -1,7 +1,7 @@
 {
     "name": "oleg-chulakov-studio/yii2-queue-mailer",
     "description": "Mailer with send message via queue.",
-    "license": "BSD 3-Clause",
+    "license": "BSD-3-Clause",
     "type": "yii2-components",
     "require": {
         "php": ">=5.6.0",

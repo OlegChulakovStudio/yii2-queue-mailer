@@ -6,8 +6,6 @@
  * @link http://chulakov.com/
  */
 
-namespace chulakov\queuemailer\migrations;
-
 use yii\db\Migration;
 
 class m171205_184000_queue_install extends Migration
