@@ -11,6 +11,7 @@ namespace chulakov\queuemailer;
 use chulakov\queuemailer\jobs\MessageJobInterface;
 use chulakov\queuemailer\models\MailStorageInterface;
 use chulakov\queuemailer\exceptions\NotFoundModelException;
+use yii\base\InvalidConfigException;
 use yii\mail\BaseMailer;
 use yii\mail\MessageInterface;
 
@@ -51,7 +52,6 @@ class Mailer extends BaseMailer
      *
      * @param MessageInterface|Message $message
      * @return bool
-     * @throws \yii\base\InvalidConfigException
      */
     protected function sendMessage($message)
     {
@@ -60,8 +60,12 @@ class Mailer extends BaseMailer
             return true;
         }
         // Попытка отправить почту напрямую
-        if ($mailer = \Yii::$app->get($this->mailerComponent, false)) {
-            return $mailer->send($message->getSwiftMessage());
+        try {
+            if ($mailer = \Yii::$app->get($this->mailerComponent, false)) {
+                return $mailer->send($message->getSwiftMessage());
+            }
+        } catch (InvalidConfigException $e) {
+            // Никогда не попадет в данный блок. Компонент запрашивается без выбрасывания исключений
         }
         return false;
     }
@@ -74,11 +78,19 @@ class Mailer extends BaseMailer
      */
     protected function saveMessage($message)
     {
+        // Попытка сохранить сообщение перед отправкой
+        if (!$message->saveMail()) {
+            return false;
+        }
         // Попытка поставить в очередь
-        if ($queue = \Yii::$app->get($this->queueComponent, false)) {
-            /** @var MessageJobInterface $job */
-            $job = $this->jobClass;
-            return $queue->push($job::create($message, $this));
+        try {
+            if ($queue = \Yii::$app->get($this->queueComponent, false)) {
+                /** @var MessageJobInterface $job */
+                $job = $this->jobClass;
+                return $queue->push($job::create($message, $this));
+            }
+        } catch (InvalidConfigException $e) {
+            // Никогда не попадет в данный блок. Компонент запрашивается без выбрасывания исключений
         }
         return false;
     }
@@ -87,7 +99,7 @@ class Mailer extends BaseMailer
      * Создание нового сообщения
      *
      * @return Message|object
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
     public function createMessage()
     {
@@ -115,7 +127,7 @@ class Mailer extends BaseMailer
      * @param bool $throwException
      * @return Message|object
      * @throws NotFoundModelException
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
     public function findMessage($id, $throwException = true)
     {
@@ -136,7 +148,7 @@ class Mailer extends BaseMailer
      * @param MailStorageInterface $mail
      * @param array $config
      * @return Message|object
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
     protected function buildMessage($mail, $config)
     {

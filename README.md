@@ -21,7 +21,7 @@ composer require oleg-chulakov-studio/yii2-queue-mailer
 
 Выполнение миграций:
 ```
-php yii migrate/up --migrationNamespaces='chulakov\queuemailer\migrations'
+php yii migrate/up --migrationPath=@vendor/oleg-chulakov-studio/yii2-queuemailer/src/migrations'
 ```
 
 Настройка

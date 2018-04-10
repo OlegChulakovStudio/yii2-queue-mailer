@@ -85,7 +85,6 @@ class QueueMail extends ActiveRecord implements MailStorageInterface
     public function rules()
     {
         return [
-            [['to', 'from', 'subject'], 'required'],
             ['priority', 'integer', 'max' => 5],
             [[
                 'subject', 'charset', 'return_path', 'read_receipt_to'

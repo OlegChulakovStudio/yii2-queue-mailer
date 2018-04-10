@@ -78,7 +78,7 @@ class UsageTest extends TestCase
             ->setTextBody($body = 'Test text mail body.');
         $this->assertTrue($message->send());
 
-        \Yii::$app->get('queue')->run();
+        \Yii::$app->get('queue')->run(0);
 
         $this->assertSendingMail($subject, $body);
     }

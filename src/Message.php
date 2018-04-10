@@ -588,13 +588,10 @@ class Message extends BaseObject implements MessageInterface
         if ($mailer === null && $this->mailer === null) {
             throw new InvalidConfigException('Некорректно настроена отправка письма.');
         }
-        if ($this->saveMail()) {
-            if ($mailer === null) {
-                $mailer = $this->mailer;
-            }
-            return $mailer->send($this);
+        if ($mailer === null) {
+            $mailer = $this->mailer;
         }
-        return false;
+        return $mailer->send($this);
     }
 
     /**
@@ -819,7 +816,7 @@ class Message extends BaseObject implements MessageInterface
      *
      * @return bool
      */
-    protected function saveMail()
+    public function saveMail()
     {
         $mail = $this->mail;
 
@@ -828,11 +825,7 @@ class Message extends BaseObject implements MessageInterface
         $mail->embeds = $this->serialize($this->embeds);
         $mail->signs = $this->serialize($this->signs);
 
-        if ($mail->save()) {
-            return true;
-        }
-
-        return false;
+        return $mail->save();
     }
 
     /**
