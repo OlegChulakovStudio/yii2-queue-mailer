@@ -11,7 +11,7 @@ namespace chulakov\queuemailer;
 use yii\di\Instance;
 use yii\base\BaseObject;
 use yii\base\InvalidConfigException;
-use yii\base\InvalidParamException;
+use yii\base\InvalidArgumentException;
 use yii\mail\MailerInterface;
 use yii\mail\MessageInterface;
 use chulakov\queuemailer\models\QueueMail;
@@ -653,6 +653,18 @@ class Message extends BaseObject implements MessageInterface
     }
 
     /**
+     * Зачистка прикрепленных файлов
+     */
+    public function clearAttachments()
+    {
+        /** @var AttacheStorage $attache */
+        if ($attache = \Yii::$app->get($this->attacheComponent, false)) {
+            $attache->removeFiles($this->attachments);
+            $attache->removeFiles($this->embeds);
+        }
+    }
+
+    /**
      * Создание встраиваемого содержимого
      *
      * @param array $embed
@@ -762,6 +774,7 @@ class Message extends BaseObject implements MessageInterface
      *
      * @param Attachment $file Мета информация о файле
      * @return string|null Пусть до сохраненного файла
+     * @throws InvalidArgumentException
      */
     protected function attacheFile(Attachment $file)
     {
@@ -774,7 +787,7 @@ class Message extends BaseObject implements MessageInterface
         if (!empty($file->path) && is_file($file->path)) {
             return $file->path;
         }
-        throw new InvalidParamException("Невозможно прикрепить файл.");
+        throw new InvalidArgumentException("Невозможно прикрепить файл.");
     }
 
     /**

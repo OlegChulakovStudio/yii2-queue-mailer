@@ -8,12 +8,19 @@
 
 namespace chulakov\queuemailer\jobs;
 
-use chulakov\queuemailer\Mailer;
-use chulakov\queuemailer\Message;
+use yii\queue\Queue;
+use yii\queue\JobInterface;
 use yii\base\BaseObject;
 use yii\base\InvalidConfigException;
-use yii\queue\JobInterface;
+use chulakov\queuemailer\Mailer;
+use chulakov\queuemailer\Message;
+use chulakov\queuemailer\exceptions\NotFoundModelException;
 
+/**
+ * Задание с отложенной отправкой почтового сообщения
+ *
+ * @package chulakov\queuemailer\jobs
+ */
 class MessageJob extends BaseObject implements JobInterface, MessageJobInterface
 {
     /**
@@ -26,6 +33,8 @@ class MessageJob extends BaseObject implements JobInterface, MessageJobInterface
     public $componentName;
 
     /**
+     * Постановка в очередь отложенного сообщения
+     *
      * @param Message $message
      * @param Mailer $mailer
      * @return MessageJobInterface
@@ -39,9 +48,11 @@ class MessageJob extends BaseObject implements JobInterface, MessageJobInterface
     }
 
     /**
-     * @param \yii\queue\Queue $queue
-     * @throws \yii\base\InvalidConfigException
-     * @throws \chulakov\queuemailer\exceptions\NotFoundModelException
+     * Выполнение отложенной отправки сообщения
+     *
+     * @param Queue $queue
+     * @throws InvalidConfigException
+     * @throws NotFoundModelException
      */
     public function execute($queue)
     {
@@ -56,6 +67,8 @@ class MessageJob extends BaseObject implements JobInterface, MessageJobInterface
             throw new InvalidConfigException("Не найдено сообщение с ID {$this->messageId}.");
         }
         // Отправка сообщения через сложенный компонент
-        $message->getSwiftMessage()->send($sender);
+        if ($message->getSwiftMessage()->send($sender)) {
+            $message->clearAttachments();
+        }
     }
 }
