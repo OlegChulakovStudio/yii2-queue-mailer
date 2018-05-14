@@ -75,9 +75,19 @@ class AttacheStorage extends Component
         if (!$this->storageClear) {
             return;
         }
+        $path = [];
         foreach ($files as $file) {
-            if (strpos($this->storagePath, $file['name']) !== false) {
+            if (strpos($file['name'], $this->storagePath) !== false) {
                 @unlink($file['name']);
+                $basePath = dirname($file['name']);
+                if (!in_array($basePath, $path)) {
+                    $path[] = $basePath;
+                }
+            }
+        }
+        foreach ($path as $item) {
+            if (count(scandir($item)) == 2) {
+                @rmdir($item);
             }
         }
     }
