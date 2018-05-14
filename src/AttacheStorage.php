@@ -20,6 +20,10 @@ class AttacheStorage extends Component
      */
     public $storageAll = false;
     /**
+     * @var bool Необходимость очистки файлов во временном каталоге хранилища
+     */
+    public $storageClear = true;
+    /**
      * @var string Путь для временных файлов
      */
     public $storagePath = '@runtime/attachments';
@@ -59,6 +63,23 @@ class AttacheStorage extends Component
            return $fullPath;
         }
         return null;
+    }
+
+    /**
+     * Очистка файлов из рантайма
+     *
+     * @param array $files
+     */
+    public function removeFiles($files)
+    {
+        if (!$this->storageClear) {
+            return;
+        }
+        foreach ($files as $file) {
+            if (strpos($this->storagePath, $file['name']) !== false) {
+                @unlink($file['name']);
+            }
+        }
     }
 
     /**

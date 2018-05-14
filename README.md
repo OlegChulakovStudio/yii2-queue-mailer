@@ -21,7 +21,7 @@ composer require oleg-chulakov-studio/yii2-queue-mailer
 
 Выполнение миграций:
 ```
-php yii migrate/up --migrationPath=@vendor/oleg-chulakov-studio/yii2-queuemailer/src/migrations'
+php yii migrate/up --migrationPath="@vendor/oleg-chulakov-studio/yii2-queue-mailer/src/migrations"
 ```
 
 Настройка
@@ -55,11 +55,13 @@ php yii migrate/up --migrationPath=@vendor/oleg-chulakov-studio/yii2-queuemailer
 'attachment' => [
     'class' => 'chulakov\queuemailer\AttacheStorage',
     'storageAll' => false,
+    'storageClear' => true,
     'storagePath' => '@runtime/attachments',
 ]
 ```
 
 - **storageAll** - Копировать ли все прикрепляемые файлы. По умолчанию `false`.
+- **storageClear** - Необходимость удаление всех временных файлов сообщения после отправки. По умолчанию `true`.
 - **storagePath** - Папка в которую будут сохранены прикрепляемые файлы. По умолчанию `@runtime/attachments`.
 Для каждого письма __со вложениями__ будет создана своя папка.
 
