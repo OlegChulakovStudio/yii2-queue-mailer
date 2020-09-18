@@ -138,6 +138,7 @@ class AttacheStorage extends Component
             if (!is_dir($dir)) {
                 return FileHelper::createDirectory($dir);
             }
+            return true;
         } catch (Exception $e) {
             \Yii::error($e);
         }
